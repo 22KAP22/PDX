@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH --job-name=testing_job
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --constraint=EPYC_9654
+#SBATCH --time=00:30:00
+
+
+#Load spack and the my spack environment
+. /cluster/software/stacks/2025-06/setup-env.sh
+spack env activate MThesis
+
+#Run simple Python script
+python ./examples/pdx_simple.py
+

@@ -32,7 +32,7 @@ if is_windows:
 if is_linux:
     compile_args.append("-std=c++17")
     compile_args.append("-O3")
-    compile_args.append("-march=native")
+    compile_args.append("-march=znver4")
     compile_args.append("-fPIC")
     compile_args.append("-Wno-unknown-pragmas")
     compile_args.append("-fdiagnostics-color=always")
