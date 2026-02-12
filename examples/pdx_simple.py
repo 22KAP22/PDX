@@ -10,11 +10,11 @@ PDXearch (pruned search) + ADSampling with an IVF index (built with FAISS)
 This example uses a random collection of vectors
 """
 if __name__ == "__main__":
-    num_dimensions = 512
-    num_embeddings = 10_000
-    num_query_embeddings = 10
-    knn = 20
-    nprobe = 64
+    num_dimensions = 1024
+    num_embeddings = 1_000_000
+    num_query_embeddings = 10_000
+    knn = 50
+    nprobe = 256
     print(f'Running example: PDXearch + ADSampling (IVFFlat)\n- D={num_dimensions}\n- k={knn}\n- nprobe={nprobe}\n- dataset=RANDOM')
     X, _ = sklearn.datasets.make_blobs(n_samples=num_embeddings, n_features=num_dimensions, centers=1000, random_state=1)
     X = X.astype(np.float32)

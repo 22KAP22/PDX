@@ -36,6 +36,8 @@ compiled.cpython*
 __pycache__/
 /examples/indexes/
 
+fftw-3.3.10.tar.gz
+fftw-3.3.10
 venv
 .venv
 /build/

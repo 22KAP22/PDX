@@ -32,15 +32,16 @@ if is_windows:
 if is_linux:
     compile_args.append("-std=c++17")
     compile_args.append("-O3")
-    compile_args.append("-march=znver4")
+    compile_args.append("-march=cascadelake")
     compile_args.append("-fPIC")
     compile_args.append("-Wno-unknown-pragmas")
     compile_args.append("-fdiagnostics-color=always")
     compile_args.append("-Wl,--unresolved-symbols=ignore-in-shared-libs")
+    compile_args.append("-fpermissive")
     link_args.append("-static-libstdc++")
     if has_fftw:
         # link_args.append("-lfftw3")
-        link_args.append("-lfftw3f")
+        link_args.append("-L/home/pgjokaj/MThesis/external/pdx/fftw-3.3.10/.libs, -lfftw3f")
 
 if is_macos:
     compile_args.append("-std=c++17")
@@ -72,6 +73,7 @@ include_dirs = [
     "extern",
     "include",
     "python",
+    "fftw-3.3.10/api"
 ]
 
 # TODO: We also require FAISS, but installing from PyPI is not ideal
