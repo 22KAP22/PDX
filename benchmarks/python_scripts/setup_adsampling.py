@@ -8,6 +8,9 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 def generate_adsampling_ivf(dataset_name: str, _type='pdx', normalize=True):
+    if os.path.exists(os.path.join(PDX_ADSAMPLING_DATA, dataset_name + '-ivf')) and os.path.exists(os.path.join(NARY_ADSAMPLING_DATA, dataset_name + '-matrix')):
+        print('IVF Already exists. Skipping.')
+        return
     print(dataset_name)
     base_idx = BaseIndexPDXIVF(DIMENSIONALITIES[dataset_name], 'l2sq')
     # Core index IVF must exist
@@ -29,6 +32,9 @@ def generate_adsampling_ivf(dataset_name: str, _type='pdx', normalize=True):
     preprocessor.store_metadata(os.path.join(NARY_ADSAMPLING_DATA, dataset_name + '-matrix'))
 
 def generate_adsampling_ivf_global8(dataset_name: str, normalize=True):
+    if os.path.exists(os.path.join(PDX_ADSAMPLING_DATA, dataset_name + '-ivf-u8')) and os.path.exists(os.path.join(NARY_ADSAMPLING_DATA, dataset_name + '-ivf-u8-matrix')):
+        print('IVFSQ8 Already exists. Skipping.')
+        return
     base_idx = BaseIndexPDXIVF(DIMENSIONALITIES[dataset_name], 'l2sq')
     # Core index IVF must exist
     index_path = os.path.join(CORE_INDEXES_FAISS, get_core_index_filename(dataset_name, norm=normalize))
@@ -46,6 +52,9 @@ def generate_adsampling_ivf_global8(dataset_name: str, normalize=True):
     preprocessor.store_metadata(os.path.join(NARY_ADSAMPLING_DATA, dataset_name + '-ivf-u8-matrix'))
 
 def generate_adsampling_ivf2(dataset_name: str, normalize=True):
+    if os.path.exists(os.path.join(PDX_ADSAMPLING_DATA, dataset_name + '-ivf2')) and os.path.exists(os.path.join(NARY_ADSAMPLING_DATA, dataset_name + '-ivf2-matrix')):
+        print('IVF2 Already exists. Skipping.')
+        return
     base_idx = BaseIndexPDXIVF2(DIMENSIONALITIES[dataset_name], 'l2sq')
     # Core index IVF must exist
     index_path = os.path.join(CORE_INDEXES_FAISS, get_core_index_filename(dataset_name, norm=normalize))
@@ -64,6 +73,9 @@ def generate_adsampling_ivf2(dataset_name: str, normalize=True):
     preprocessor.store_metadata(os.path.join(NARY_ADSAMPLING_DATA, dataset_name + '-ivf2-matrix'))
 
 def generate_adsampling_ivf2_global8(dataset_name: str, normalize=True):
+    if os.path.exists(os.path.join(PDX_ADSAMPLING_DATA, dataset_name + '-ivf2-u8')) and os.path.exists(os.path.join(NARY_ADSAMPLING_DATA, dataset_name + '-ivf2-u8-matrix')):
+        print('IVF2SQ8 Already exists. Skipping.')
+        return
     base_idx = BaseIndexPDXIVF2(DIMENSIONALITIES[dataset_name], 'l2sq')
     # Core index IVF must exist
     index_path = os.path.join(CORE_INDEXES_FAISS, get_core_index_filename(dataset_name, norm=normalize))

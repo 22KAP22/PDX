@@ -7,6 +7,9 @@ from setup_settings import *
 def generate_test_data(dataset):
     if not os.path.exists(GROUND_TRUTH_DATA):
         os.makedirs(GROUND_TRUTH_DATA)
+    if os.path.exists(os.path.join(QUERIES_DATA, dataset)):
+        print('Skipping.')
+        return
     test = read_hdf5_test_data(dataset)
     N_QUERIES = len(test)
     with open(os.path.join(QUERIES_DATA, dataset), "wb") as file:

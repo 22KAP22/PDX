@@ -7,6 +7,9 @@ from sklearn import preprocessing
 
 
 def generate_bond_ivf(dataset_name: str, normalize=True):
+    if os.path.exists(os.path.join(PDX_DATA, dataset_name + '-ivf')):
+        print('IVF_BOND already exists. Skipping.')
+        return
     base_idx = BaseIndexPDXIVF(DIMENSIONALITIES[dataset_name], 'l2sq')
     index_path = os.path.join(CORE_INDEXES_FAISS, get_core_index_filename(dataset_name))
     # Reads the core index created by faiss to generate the PDX index
@@ -23,6 +26,9 @@ def generate_bond_ivf(dataset_name: str, normalize=True):
 
 
 def generate_bond_flat(dataset_name: str, normalize=True):
+    if os.path.exists(os.path.join(PDX_DATA, dataset_name + '-flat')):
+        print('FLAT_BOND already exists. Skipping.')
+        return
     base_idx = BaseIndexPDXFlat(DIMENSIONALITIES[dataset_name], 'l2sq')
     print('Reading train data')
     data = read_hdf5_train_data(dataset_name)

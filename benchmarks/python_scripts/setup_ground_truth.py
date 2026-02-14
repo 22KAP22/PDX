@@ -6,8 +6,19 @@ from sklearn import preprocessing
 
 # Generates ground truth with SKLearn
 def generate_ground_truth(dataset, KNNS=(10, 100), normalize=False):
+    skip_all = True
     if not os.path.exists(GROUND_TRUTH_DATA):
         os.makedirs(GROUND_TRUTH_DATA)
+    for knn in KNNS: 
+        gt_filename = get_ground_truth_filename(dataset, knn, normalize)
+        if os.path.exists(os.path.join(GROUND_TRUTH_DATA + gt_filename.replace('.json', ''))):
+                print(f'Ground truth for ' + dataset + '_' +  knn +  ' already exists. Skipping.')
+        else:
+            skip_all = False
+            break
+    if skip_all:
+        print('All requested ground truths already exist. Returning.')
+        return
     train, test = read_hdf5_data(dataset)
     N_QUERIES = len(test)
     # test = test[:N_QUERIES]
@@ -21,9 +32,11 @@ def generate_ground_truth(dataset, KNNS=(10, 100), normalize=False):
     algo.fit(train)
     for knn in KNNS:
         gt_filename = get_ground_truth_filename(dataset, knn, normalize)
+        if os.path.exists(os.path.join(GROUND_TRUTH_DATA + gt_filename.replace('.json', ''))):
+            continue
         gt_name = os.path.join(SEMANTIC_GROUND_TRUTH_PATH, gt_filename)
         gt = {}
-        index_data = []
+        i*ndex_data = []
         distance_data = []
         print('Querying for GT...')
         dist, index = algo.query_batch(test, n=knn)
