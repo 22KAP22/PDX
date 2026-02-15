@@ -9,12 +9,6 @@ from sklearn import preprocessing
 
 BUILD = False
 DATASETS_TO_USE = [
-    'openai-1536-angular',
-    'agnews-mxbai-1024-euclidean',
-    'instructorxl-arxiv-768',
-    'simplewiki-openai-3072-normalized',
-    'msong-420',
-    'llama-128-ip',
 ]
 # Scalar Quantization in FAISS is EXTREMELY slow in ARM due to lack of SIMD
 if __name__ == '__main__':

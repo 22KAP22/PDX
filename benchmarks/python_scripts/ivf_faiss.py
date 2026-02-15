@@ -7,12 +7,6 @@ from setup_utils import *
 from setup_settings import *
 
 DATASETS_TO_USE = [
-    'openai-1536-angular',
-    'agnews-mxbai-1024-euclidean',
-    'instructorxl-arxiv-768',
-    'simplewiki-openai-3072-normalized',
-    'msong-420',
-    'llama-128-ip',
 ]
 if __name__ == '__main__':
     RESULTS_PATH = os.path.join(RESULTS_DIRECTORY, "IVF_FAISS.csv")
