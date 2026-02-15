@@ -16,12 +16,6 @@ ALGORITHMS = [  # Choose the pruning algorithms for which indexes are going to b
     # 'bond'
 ]
 DATASETS_TO_USE = [
-    'openai-1536-angular',
-    'agnews-mxbai-1024-euclidean',
-    'instructorxl-arxiv-768',
-    'simplewiki-openai-3072-normalized',
-    'msong-420',
-    'llama-128-ip',
 ]
 if __name__ == "__main__":
     if DOWNLOAD:

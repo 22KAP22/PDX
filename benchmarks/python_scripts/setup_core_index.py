@@ -46,7 +46,7 @@ def generate_core_ivf(dataset_name: str, normalize=True):
 def generate_core_ivf2(dataset_name: str, normalize=True):
     idx_path = os.path.join(CORE_INDEXES_FAISS, get_core_index_filename(dataset_name, normalize))
     idx_path_l0 = os.path.join(CORE_INDEXES_FAISS_L0, get_core_index_filename(dataset_name, normalize))
-    if os.path.exists(idx_path) and os.path.exists(idx_path_l0):
+    if os.path.exists(idx_path) and os.path.exists((idx_path_l0 + '.bin')):
         print(f'IVF2 Index already exists for {dataset_name}. Skipping.')
         return
     data = read_hdf5_train_data(dataset_name)

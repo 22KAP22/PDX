@@ -36,7 +36,7 @@ def generate_ground_truth(dataset, KNNS=(10, 100), normalize=False):
             continue
         gt_name = os.path.join(SEMANTIC_GROUND_TRUTH_PATH, gt_filename)
         gt = {}
-        i*ndex_data = []
+        index_data = []
         distance_data = []
         print('Querying for GT...')
         dist, index = algo.query_batch(test, n=knn)
