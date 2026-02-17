@@ -7,7 +7,7 @@ from setup_utils import *
 from setup_settings import *
 from sklearn import preprocessing
 
-BUILD = False
+BUILD = True
 DATASETS_TO_USE = [
 ]
 # Scalar Quantization in FAISS is EXTREMELY slow in ARM due to lack of SIMD

@@ -16,7 +16,7 @@ if __name__ == '__main__':
         arg_dataset = sys.argv[1]
     if len(sys.argv) > 2:
         IVF_NPROBE = int(sys.argv[2])  # controls recall of search
-    if not len(DATASETS_TO_USE): DATASETS_TO_USE = DATASETS
+    if not len(DATASETS_TO_USE): DATASETS_TO_USE = DATASETS_2
     for dataset in DATASETS_TO_USE:
         if len(arg_dataset) and dataset != arg_dataset:
             continue
@@ -29,6 +29,8 @@ if __name__ == '__main__':
 
         queries = read_hdf5_test_data(dataset)
         queries = preprocessing.normalize(queries, axis=1, norm='l2')
+
+        print(f'DATASET: {dataset}')
 
         print('Restoring index...')
         index = faiss.read_index(index_name)
@@ -53,11 +55,14 @@ if __name__ == '__main__':
 
             print('Querying Measure...')
             for i in range(N_MEASURE_RUNS):
+                j = 0
                 for q in queries:
                     q = np.ascontiguousarray(np.array([q]))
                     clock.tic()
                     index.search(q, KNN)
                     runtimes.append(clock.toc())
+                    print(f'Query {j}/1000', end='\r')
+                    j += 1
 
             # Measure recall afterwards to not affect cache
             gt = json.load(open(gt_name, 'r'))
@@ -65,6 +70,7 @@ if __name__ == '__main__':
             for q in queries:
                 _, matches = index.search(np.ascontiguousarray(np.array([q])), KNN)
                 recalls.append(float(len(set(matches[0]).intersection(set(gt[str(query_i)][:KNN])))) / KNN)
+                print(f'Query {query_i}/1000', end='\r')
                 query_i += 1
 
             metadata = {
