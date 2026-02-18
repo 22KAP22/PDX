@@ -7,7 +7,7 @@ from setup_utils import *
 from setup_settings import *
 from sklearn import preprocessing
 
-BUILD = True
+BUILD = False
 DATASETS_TO_USE = [
 ]
 # Scalar Quantization in FAISS is EXTREMELY slow in ARM due to lack of SIMD
@@ -90,11 +90,14 @@ if __name__ == '__main__':
 
             print('Querying Measure...')
             for i in range(N_MEASURE_RUNS):
+                j = 0
                 for q in queries:
                     q = np.ascontiguousarray(np.array([q]))
                     clock.tic()
                     index.search(q, KNN)
                     runtimes.append(clock.toc())
+                    print(f'Query {j}/1000', end='\r')
+                    j += 1
 
             # Measure recall afterwards to not affect cache
             gt = json.load(open(gt_name, 'r'))
@@ -102,6 +105,7 @@ if __name__ == '__main__':
             for q in queries:
                 _, matches = index.search(np.ascontiguousarray(np.array([q])), KNN)
                 recalls.append(float(len(set(matches[0]).intersection(set(gt[str(query_i)][:KNN])))) / KNN)
+                print(f'Query {query_i}/1000', end='\r')
                 query_i += 1
 
             metadata = {
