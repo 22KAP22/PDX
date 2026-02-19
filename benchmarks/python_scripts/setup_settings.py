@@ -134,3 +134,7 @@ DIMENSIONALITIES = {
     'llama-128-ip': 128,
     'yahoo-minilm-384-normalized': 384
 }
+
+PCA_DIMENSIONALITIES = [
+    
+]
