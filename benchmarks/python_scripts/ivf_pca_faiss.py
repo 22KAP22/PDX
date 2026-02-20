@@ -1,19 +1,18 @@
 import faiss
 import json
 import sys
-from numpy.random import default_rng
 from benchmark_utils import *
 from setup_utils import *
 from setup_settings import *
 from sklearn import preprocessing
 
-BUILD = False
+BUILD = True
 DATASETS_TO_USE = [
 ]
 # Scalar Quantization in FAISS is EXTREMELY slow in ARM due to lack of SIMD
 if __name__ == '__main__':
     RESULTS_PATH = os.path.join(RESULTS_DIRECTORY, "IVF_FAISS_U8.csv")
-    arg_dataset = ""
+    arg_dataset = "sift-128-euclidean"
     IVF_NPROBE = 0
     if len(sys.argv) > 1:
         arg_dataset = sys.argv[1]
@@ -42,19 +41,12 @@ if __name__ == '__main__':
                 nbuckets = math.ceil(4 * math.sqrt(num_embeddings))
             else:  # Deep with 10m
                 nbuckets = math.ceil(8 * math.sqrt(num_embeddings))
-            for pca_dim in PCA_DIMENSIONALITIES:
-                print('Instantiating')
-                index = faiss.index_factory(dimensionality, )
-                training_points = nbuckets * 300
-                if training_points < num_embeddings:
-                    rng = default_rng()
-                    training_sample_idxs = rng.choice(num_embeddings, size=training_points, replace=False)
-                    training_sample_idxs.sort()
-                    print('Training with', training_points)
-                    index.train(data[training_sample_idxs])
-                else:
-                    print('Training with all points')
-                    index.train(data)
+            for pca_dim_factor in PCA_DIMENSIONALITIES_FACTORS:
+                print(f'Instantiating index with dim: {pca_dim_factor}')
+                pca_dim = math.ceil(dimensionality * pca_dim_factor)
+                index = faiss.index_factory(dimensionality, f'PCA{pca_dim},IVF{nbuckets}')
+                print('Training with all points')
+                index.train(data)
                 print('Building')
                 index.add(data)
                 print('Saving')

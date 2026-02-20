@@ -135,6 +135,14 @@ DIMENSIONALITIES = {
     'yahoo-minilm-384-normalized': 384
 }
 
-PCA_DIMENSIONALITIES = [
-    
+PCA_DIMENSIONALITIES_FACTORS = [
+    0.8,
+    0.5,
+    0.4,
+    0.3,
+    0.25,
+    0.2,
+    0.15,
+    0.1,
+    0.05
 ]

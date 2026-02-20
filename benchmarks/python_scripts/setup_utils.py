@@ -45,6 +45,11 @@ def get_core_index_filename(file, norm=True, balanced=False):
         return f"ivf_{file}_norm.index"
     return f"ivf_{file}.index"
 
+def get_pca_filename(file, norm=True):
+    if norm:
+        return f"pca_{file}_norm.faiss"
+    return f"pca_{file}.faiss"
+
 
 def get_delta_d(ndim):
     delta_d = 32
