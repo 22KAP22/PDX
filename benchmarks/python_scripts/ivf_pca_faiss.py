@@ -23,8 +23,8 @@ if __name__ == '__main__':
         if len(arg_dataset) and dataset != arg_dataset:
             continue
         dimensionality = DIMENSIONALITIES[dataset]
-        index_name = os.path.join(CORE_INDEXES_FAISS_U8, get_core_index_filename(dataset))
         gt_name = os.path.join(SEMANTIC_GROUND_TRUTH_PATH, get_ground_truth_filename(dataset, 100))
+        pca_data_name = os.path.join(PCA_DATA, get_pca_filename(dataset))
 
         if BUILD:
             print('Building FAISS PCA indexes for', dataset)
@@ -32,7 +32,9 @@ if __name__ == '__main__':
             data = read_hdf5_train_data(dataset)
             print('Normalizing')
             data = preprocessing.normalize(data, axis=1, norm='l2')
+            pca_full = faiss.read_VectorTransform(pca_data_name)
             num_embeddings = len(data)
+            pca_data = pca_full.apply(num_embeddings, data)
             if dataset == "simplewiki-openai-3072-normalized": # Special case because it has too many dimensions!
                 nbuckets = 2048
             elif num_embeddings < 500_000:
@@ -43,12 +45,15 @@ if __name__ == '__main__':
                 nbuckets = math.ceil(8 * math.sqrt(num_embeddings))
             for pca_dim_factor in PCA_DIMENSIONALITIES_FACTORS:
                 print(f'Instantiating index with dim: {pca_dim_factor}')
-                pca_dim = math.ceil(dimensionality * pca_dim_factor)
-                index = faiss.index_factory(dimensionality, f'PCA{pca_dim},IVF{nbuckets}')
+                pca_dim = int(math.ceil(dimensionality * pca_dim_factor))
+                index_name = os.path.join(CORE_INDEXES_FAISS_PCA, get_core_pca_index_filename(dataset, pca_dim))
+                index_data = pca_data[:, :pca_dim]
+                coarse_quantizer =  faiss.IndexFlatL2(pca_dim)
+                index = faiss.IndexIVFScalarQuantizer(coarse_quantizer, pca_dim, int(nbuckets))
                 print('Training with all points')
-                index.train(data)
+                index.train(index_data)
                 print('Building')
-                index.add(data)
+                index.add(index_data)
                 print('Saving')
                 faiss.write_index(index, index_name)
             continue
@@ -59,9 +64,7 @@ if __name__ == '__main__':
         queries = read_hdf5_test_data(dataset)
         queries = preprocessing.normalize(queries, axis=1, norm='l2')
 
-        print('Restoring index...')
-        index = faiss.read_index(index_name)
-        print('Index restored...')
+        
 
         nprobes_to_use = []
         if IVF_NPROBE:
@@ -75,36 +78,55 @@ if __name__ == '__main__':
                 continue
             if ivf_nprobe > index.nlist:
                 continue
-            runtimes = []
-            recalls = []
-            clock = TicToc()
-            index.nprobe = ivf_nprobe
+            
+            # We need to apply this for all different dimensionality reductions once and then take dimensions we need
+            print(f'Transforming with PCA')
+            pca_full = faiss.read_VectorTransform(pca_data_name)
+            pca_queries = pca_full.apply(queries)
+            
 
-            print('Querying Measure...')
-            for i in range(N_MEASURE_RUNS):
-                j = 0
+            for pca_factor in PCA_DIMENSIONALITIES_FACTORS:
+                print('PCA Facotr: ', pca_factor)
+                pca_dim = int(math.ceil(dimensionality * pca_dim_factor))
+
+                print('Restoring index...')
+                index_name = os.path.join(CORE_INDEXES_FAISS_PCA, get_core_pca_index_filename(dataset, pca_dim))
+                index = faiss.read_index(index_name)
+                print('Index restored...')
+                
+                # Only consider the dimensions we need
+                search_queries = pca_queries[:, :pca_dim]
+
+                runtimes = []
+                recalls = []
+                clock = TicToc()
+                index.nprobe = ivf_nprobe
+
+                print('Querying Measure...')
+                for i in range(N_MEASURE_RUNS):
+                    j = 0
+                    for q in search_queries:
+                        q = np.ascontiguousarray(np.array([q]))
+                        clock.tic()
+                        index.search(q, KNN)
+                        runtimes.append(clock.toc())
+                        print(f'Query {j}/{len(search_queries)}', end='\r')
+                        j += 1
+
+                # Measure recall afterwards to not affect cache
+                gt = json.load(open(gt_name, 'r'))
+                query_i = 0
                 for q in queries:
-                    q = np.ascontiguousarray(np.array([q]))
-                    clock.tic()
-                    index.search(q, KNN)
-                    runtimes.append(clock.toc())
-                    print(f'Query {j}/1000', end='\r')
-                    j += 1
+                    _, matches = index.search(np.ascontiguousarray(np.array([q])), KNN)
+                    recalls.append(float(len(set(matches[0]).intersection(set(gt[str(query_i)][:KNN])))) / KNN)
+                    print(f'Query {query_i}/1000', end='\r')
+                    query_i += 1
 
-            # Measure recall afterwards to not affect cache
-            gt = json.load(open(gt_name, 'r'))
-            query_i = 0
-            for q in queries:
-                _, matches = index.search(np.ascontiguousarray(np.array([q])), KNN)
-                recalls.append(float(len(set(matches[0]).intersection(set(gt[str(query_i)][:KNN])))) / KNN)
-                print(f'Query {query_i}/1000', end='\r')
-                query_i += 1
-
-            metadata = {
-                'dataset': dataset,
-                'n_queries': len(queries),
-                'algorithm': 'ivf_faiss',
-                'recall': sum(recalls) / float(len(recalls)),
-                'ivf_nprobe': ivf_nprobe
-            }
-            save_results(runtimes, RESULTS_PATH, metadata)
+                metadata = {
+                    'dataset': dataset,
+                    'n_queries': len(queries),
+                    'algorithm': 'ivf_faiss',
+                    'recall': sum(recalls) / float(len(recalls)),
+                    'ivf_nprobe': ivf_nprobe
+                }
+                save_results(runtimes, RESULTS_PATH, metadata)

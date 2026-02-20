@@ -23,7 +23,7 @@ if __name__ == '__main__':
         if len(arg_dataset) and dataset != arg_dataset:
             continue
         dimensionality = DIMENSIONALITIES[dataset]
-        file_name = os.path.join(PCA_DATA, get_pca_filename(dataset))
+        file_path = os.path.join(PCA_DATA, get_pca_filename(dataset))
 
         print('Building FAISS PCA transformed dataset', dataset)
         print('Loading data')
@@ -33,5 +33,7 @@ if __name__ == '__main__':
         num_embeddings = len(data)
         # Compute transformation matrix for all dimensions, later used to create indexes for lower dimensions
         pca = faiss.PCAMatrix(dimensionality, dimensionality)
+        print('Computing PCA transformation Matrix')
         pca.train(data)
-        faiss.write_VectorTransform(pca, file_name)
+        print('Storing')
+        faiss.write_VectorTransform(pca, file_path)

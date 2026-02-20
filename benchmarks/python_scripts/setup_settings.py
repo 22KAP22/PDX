@@ -21,6 +21,7 @@ CORE_INDEXES_FAISS = os.path.join(CORE_INDEXES, "faiss")
 CORE_INDEXES_FAISS_U8 = os.path.join(CORE_INDEXES, "faiss_sq8")
 CORE_INDEXES_FAISS_L0 = os.path.join(CORE_INDEXES, "faiss_l0")
 CORE_INDEXES_LORANN = os.path.join(CORE_INDEXES, "lorann")
+CORE_INDEXES_FAISS_PCA = os.path.join(CORE_INDEXES, "faiss_pca")
 
 PURESCAN_DATA = os.path.join(SOURCE_DIR, DATA_DIRECTORY, "purescan")
 
@@ -31,6 +32,8 @@ NARY_ADSAMPLING_DATA = os.path.join(SOURCE_DIR, DATA_DIRECTORY, "adsampling_nary
 
 PDX_DATA = os.path.join(SOURCE_DIR, DATA_DIRECTORY, "pdx")
 PDX_ADSAMPLING_DATA = os.path.join(SOURCE_DIR, DATA_DIRECTORY, "adsampling_pdx")
+
+PCA_DATA = os.path.join(SOURCE_DIR, DATA_DIRECTORY, "faiss_pca")
 
 FILTER_SELECTION_VECTORS = os.path.join(SOURCE_DIR, DATA_DIRECTORY, "selection_vectors")
 
