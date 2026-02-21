@@ -16,7 +16,7 @@ if __name__ == '__main__':
         arg_dataset = sys.argv[1]
     if len(sys.argv) > 2:
         IVF_NPROBE = int(sys.argv[2])  # controls recall of search
-    if not len(DATASETS_TO_USE): DATASETS_TO_USE = DATASETS_2
+    if not len(DATASETS_TO_USE): DATASETS_TO_USE = DATASETS
     for dataset in DATASETS_TO_USE:
         if len(arg_dataset) and dataset != arg_dataset:
             continue
@@ -56,6 +56,7 @@ if __name__ == '__main__':
             print('Querying Measure...')
             for i in range(N_MEASURE_RUNS):
                 j = 0
+                print(f'Amounf of queries: {len(queries)}')
                 for q in queries:
                     q = np.ascontiguousarray(np.array([q]))
                     clock.tic()

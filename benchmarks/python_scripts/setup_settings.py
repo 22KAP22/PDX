@@ -80,33 +80,6 @@ DATASETS = [
     "simplewiki-openai-3072-normalized"
 ]
 
-DATASETS_2 = [
-    #"sift-128-euclidean",
-    #"yi-128-ip",
-    #"llama-128-ip",
-    #"glove-200-angular",
-    #"yandex-200-cosine",
-    # "word2vec-300",
-    #"yahoo-minilm-384-normalized",
-    #"msong-420",
-    #"imagenet-clip-512-normalized",
-    #"laion-clip-512-normalized",
-    #"imagenet-align-640-normalized",
-    #"codesearchnet-jina-768-cosine",
-    # "landmark-dino-768-cosine",
-    #"landmark-nomic-768-normalized",
-    # "arxiv-nomic-768-normalized",
-    #"ccnews-nomic-768-normalized",
-    #"coco-nomic-768-normalized",
-    #"contriever-768",
-    "instructorxl-arxiv-768",
-    "gooaq-distilroberta-768-normalized",
-    "gist-960-euclidean",
-    "agnews-mxbai-1024-euclidean",
-    "openai-1536-angular",
-    "celeba-resnet-2048-cosine",
-    "simplewiki-openai-3072-normalized"
-]
 
 DIMENSIONALITIES = {
     'glove-200-angular': 200,
