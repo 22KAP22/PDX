@@ -59,6 +59,7 @@ pdxearch.egg-info
 /benchmarks/core_indexes/usearch/*
 /benchmarks/core_indexes/lorann/*
 /benchmarks/core_indexes/faiss_sq8/*
+/benchmarks/core_indexes/faiss_pca/*
 !/benchmarks/core_indexes/faiss/*.json
 
 /benchmarks/core_indexes/faiss_l0/*
@@ -73,6 +74,7 @@ pdxearch.egg-info
 /benchmarks/datasets/queries
 /benchmarks/datasets/selection_vectors
 /benchmarks/datasets/ground_truth_filtered
+/benchmarks/datasets/faiss_pca
 
 /benchmarks/gt_filtered
 

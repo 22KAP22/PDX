@@ -11,8 +11,8 @@ DATASETS_TO_USE = [
 ]
 # Scalar Quantization in FAISS is EXTREMELY slow in ARM due to lack of SIMD
 if __name__ == '__main__':
-    RESULTS_PATH = os.path.join(RESULTS_DIRECTORY, "IVF_FAISS_U8.csv")
-    arg_dataset = "sift-128-euclidean"
+    RESULTS_PATH = os.path.join(RESULTS_DIRECTORY, "PCA_IVF_FAISS.csv")
+    arg_dataset = ""
     IVF_NPROBE = 0
     if len(sys.argv) > 1:
         arg_dataset = sys.argv[1]
@@ -34,7 +34,7 @@ if __name__ == '__main__':
             data = preprocessing.normalize(data, axis=1, norm='l2')
             pca_full = faiss.read_VectorTransform(pca_data_name)
             num_embeddings = len(data)
-            pca_data = pca_full.apply(num_embeddings, data)
+            pca_data = pca_full.apply(data)
             if dataset == "simplewiki-openai-3072-normalized": # Special case because it has too many dimensions!
                 nbuckets = 2048
             elif num_embeddings < 500_000:
@@ -49,7 +49,7 @@ if __name__ == '__main__':
                 index_name = os.path.join(CORE_INDEXES_FAISS_PCA, get_core_pca_index_filename(dataset, pca_dim))
                 index_data = pca_data[:, :pca_dim]
                 coarse_quantizer =  faiss.IndexFlatL2(pca_dim)
-                index = faiss.IndexIVFScalarQuantizer(coarse_quantizer, pca_dim, int(nbuckets))
+                index = faiss.IndexIVFFlat(coarse_quantizer, pca_dim, int(nbuckets))
                 print('Training with all points')
                 index.train(index_data)
                 print('Building')
@@ -70,14 +70,14 @@ if __name__ == '__main__':
         if IVF_NPROBE:
             nprobes_to_use = [IVF_NPROBE]
         else :
-            nprobes_to_use = IVF_NPROBES
+            nprobes_to_use = PCA_IVF_NPROBES
 
         for ivf_nprobe in nprobes_to_use:
             print('Nprobe: ', ivf_nprobe)
             if IVF_NPROBE > 0 and IVF_NPROBE != ivf_nprobe:
                 continue
-            if ivf_nprobe > index.nlist:
-                continue
+            #if ivf_nprobe > index.nlist:
+            #    continue
             
             # We need to apply this for all different dimensionality reductions once and then take dimensions we need
             print(f'Transforming with PCA')
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
             for pca_factor in PCA_DIMENSIONALITIES_FACTORS:
                 print('PCA Facotr: ', pca_factor)
-                pca_dim = int(math.ceil(dimensionality * pca_dim_factor))
+                pca_dim = int(math.ceil(dimensionality * pca_factor))
 
                 print('Restoring index...')
                 index_name = os.path.join(CORE_INDEXES_FAISS_PCA, get_core_pca_index_filename(dataset, pca_dim))
@@ -116,10 +116,10 @@ if __name__ == '__main__':
                 # Measure recall afterwards to not affect cache
                 gt = json.load(open(gt_name, 'r'))
                 query_i = 0
-                for q in queries:
+                for q in search_queries:
                     _, matches = index.search(np.ascontiguousarray(np.array([q])), KNN)
                     recalls.append(float(len(set(matches[0]).intersection(set(gt[str(query_i)][:KNN])))) / KNN)
-                    print(f'Query {query_i}/1000', end='\r')
+                    print(f'Query {query_i}/{len(search_queries)}', end='\r')
                     query_i += 1
 
                 metadata = {

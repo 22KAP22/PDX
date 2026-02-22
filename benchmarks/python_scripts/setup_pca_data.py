@@ -9,7 +9,7 @@ DATASETS_TO_USE = [
 ]
 # Scalar Quantization in FAISS is EXTREMELY slow in ARM due to lack of SIMD
 if __name__ == '__main__':
-    arg_dataset = "sift-128-euclidean"
+    arg_dataset = ""
     if len(sys.argv) > 1:
         arg_dataset = sys.argv[1]
     # Create dir if it doesn't exist yet
