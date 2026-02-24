@@ -22,6 +22,7 @@ CORE_INDEXES_FAISS_U8 = os.path.join(CORE_INDEXES, "faiss_sq8")
 CORE_INDEXES_FAISS_L0 = os.path.join(CORE_INDEXES, "faiss_l0")
 CORE_INDEXES_LORANN = os.path.join(CORE_INDEXES, "lorann")
 CORE_INDEXES_FAISS_PCA = os.path.join(CORE_INDEXES, "faiss_pca")
+CORE_INDEXES_FAISS_PQ8 = os.path.join(CORE_INDEXES, "faiss_pq8")
 
 PURESCAN_DATA = os.path.join(SOURCE_DIR, DATA_DIRECTORY, "purescan")
 
