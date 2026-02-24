@@ -45,6 +45,13 @@ def get_core_index_filename(file, norm=True, balanced=False):
         return f"ivf_{file}_norm.index"
     return f"ivf_{file}.index"
 
+def get_pq8_index_filename(file, norm=True, balanced=False):
+    if balanced:
+        return f"ivf_pq8_{file}_norm.index.balanced"
+    if norm:
+        return f"ivf_pq8_{file}_norm.index"
+    return f"ivf_pq8_{file}.index"
+
 def get_core_pca_index_filename(file, dim, norm=True, balanced=False):
     if balanced:
         return f"ivf_{file}_{dim}_norm.index.balanced"

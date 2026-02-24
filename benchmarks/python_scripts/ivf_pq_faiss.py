@@ -24,7 +24,7 @@ if __name__ == '__main__':
         if len(arg_dataset) and dataset != arg_dataset:
             continue
         dimensionality = DIMENSIONALITIES[dataset]
-        index_name = os.path.join(CORE_INDEXES_FAISS_PQ8, get_core_index_filename(dataset))
+        index_name = os.path.join(CORE_INDEXES_FAISS_PQ8, get_pq8_index_filename(dataset))
         gt_name = os.path.join(SEMANTIC_GROUND_TRUTH_PATH, get_ground_truth_filename(dataset, 100))
 
         if BUILD:
