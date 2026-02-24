@@ -6,7 +6,7 @@ from setup_utils import *
 from setup_settings import *
 from sklearn import preprocessing
 
-BUILD = True
+BUILD = False 
 DATASETS_TO_USE = [
 ]
 # Scalar Quantization in FAISS is EXTREMELY slow in ARM due to lack of SIMD
@@ -64,7 +64,10 @@ if __name__ == '__main__':
         queries = read_hdf5_test_data(dataset)
         queries = preprocessing.normalize(queries, axis=1, norm='l2')
 
-        
+        # We need to apply this for all different dimensionality reductions once and then take dimensions we need
+        print(f'Transforming with PCA')
+        pca_full = faiss.read_VectorTransform(pca_data_name)
+        pca_queries = pca_full.apply(queries)
 
         nprobes_to_use = []
         if IVF_NPROBE:
@@ -72,30 +75,23 @@ if __name__ == '__main__':
         else :
             nprobes_to_use = PCA_IVF_NPROBES
 
-        for ivf_nprobe in nprobes_to_use:
-            print('Nprobe: ', ivf_nprobe)
-            if IVF_NPROBE > 0 and IVF_NPROBE != ivf_nprobe:
-                continue
-            #if ivf_nprobe > index.nlist:
-            #    continue
-            
-            # We need to apply this for all different dimensionality reductions once and then take dimensions we need
-            print(f'Transforming with PCA')
-            pca_full = faiss.read_VectorTransform(pca_data_name)
-            pca_queries = pca_full.apply(queries)
-            
-
-            for pca_factor in PCA_DIMENSIONALITIES_FACTORS:
-                print('PCA Facotr: ', pca_factor)
-                pca_dim = int(math.ceil(dimensionality * pca_factor))
-
-                print('Restoring index...')
-                index_name = os.path.join(CORE_INDEXES_FAISS_PCA, get_core_pca_index_filename(dataset, pca_dim))
-                index = faiss.read_index(index_name)
-                print('Index restored...')
+        for pca_factor in PCA_DIMENSIONALITIES_FACTORS:
+            print('PCA factor: ', pca_factor)
+            pca_dim = int(math.ceil(dimensionality * pca_factor))
+            print('Restoring index...')
+            index_name = os.path.join(CORE_INDEXES_FAISS_PCA, get_core_pca_index_filename(dataset, pca_dim))
+            index = faiss.read_index(index_name)
+            print('Index restored...')
                 
-                # Only consider the dimensions we need
-                search_queries = pca_queries[:, :pca_dim]
+            # Only consider the dimensions we need
+            search_queries = pca_queries[:, :pca_dim]
+
+            for ivf_nprobe in nprobes_to_use:
+                print('Nprobe: ', ivf_nprobe)
+                if IVF_NPROBE > 0 and IVF_NPROBE != ivf_nprobe:
+                    continue
+                if ivf_nprobe > index.nlist:
+                    continue
 
                 runtimes = []
                 recalls = []
@@ -123,7 +119,7 @@ if __name__ == '__main__':
                     query_i += 1
 
                 metadata = {
-                    'dataset': dataset,
+                    'dataset': f'{dataset}_PCA_{pca_factor}',
                     'n_queries': len(queries),
                     'algorithm': 'ivf_faiss',
                     'recall': sum(recalls) / float(len(recalls)),
