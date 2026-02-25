@@ -60,6 +60,7 @@ pdxearch.egg-info
 /benchmarks/core_indexes/lorann/*
 /benchmarks/core_indexes/faiss_sq8/*
 /benchmarks/core_indexes/faiss_pca/*
+/benchmarks/core_indexes/faiss_pq8/*
 !/benchmarks/core_indexes/faiss/*.json
 
 /benchmarks/core_indexes/faiss_l0/*

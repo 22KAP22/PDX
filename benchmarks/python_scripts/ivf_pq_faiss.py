@@ -7,7 +7,7 @@ from setup_utils import *
 from setup_settings import *
 from sklearn import preprocessing
 
-BUILD = False
+BUILD = True
 DATASETS_TO_USE = [
 ]
 # Scalar Quantization in FAISS is EXTREMELY slow in ARM due to lack of SIMD
@@ -43,16 +43,16 @@ if __name__ == '__main__':
             else:  # Deep with 10m
                 nbuckets = math.ceil(8 * math.sqrt(num_embeddings))
             print('Instantiating')
-            m = dimensionality / 4 # the amount of sub-vectors per vector
+            m = int(dimensionality) / 4 # the amount of sub-vectors per vector
             nbits = 8 #size of pq8 vector
             coarse_quantizer =  faiss.IndexFlatL2(int(dimensionality))
             index = faiss.IndexIVFPQ(
                 coarse_quantizer,
                 int(dimensionality),
                 int(nbuckets),
-                m,
-                nbits
-                )
+                int(m),
+                int(nbits)
+            )
             training_points = nbuckets * 300
             if training_points < num_embeddings:
                 rng = default_rng()
